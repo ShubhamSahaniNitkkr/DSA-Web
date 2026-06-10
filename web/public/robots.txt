@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sheetstack.app/sitemap-index.xml
+
+# LLM / AI crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /

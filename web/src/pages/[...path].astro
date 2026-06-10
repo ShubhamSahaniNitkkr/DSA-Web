@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import App from '../components/app/App';
+import { STATIC_PATHS } from '../lib/routes';
+
+export function getStaticPaths() {
+  return STATIC_PATHS.map((path) => ({ params: { path } }));
+}
+---
+
+<BaseLayout
+  title="SheetStack — DSA Practice Sheet"
+  description="Structured DSA learning with progress tracking, quizzes, and coin rewards."
+>
+  <App client:only="react" />
+</BaseLayout>

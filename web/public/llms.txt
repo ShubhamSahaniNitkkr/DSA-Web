@@ -1,0 +1,28 @@
+# SheetStack — DSA Practice Platform
+
+> SheetStack is a full-stack MERN educational web application for computer science students preparing for technical interviews.
+
+## What it does
+- Provides a structured DSA sheet organized into 8 chapters (Arrays, Two Pointers, Stack, Binary Search, Linked Lists, Trees, Graphs, Dynamic Programming)
+- Each problem includes difficulty level (Easy/Medium/Hard), company tags, YouTube tutorials, LeetCode links, and theory articles
+- Students track completion with checkboxes; progress persists across logins
+- Gamification: earn 5 coins per solved problem, 2 coins per correct quiz answer
+- Dashboard shows badges, consistency bar chart, and GitHub-style activity calendar
+- Built-in JavaScript IDE to run and verify solutions
+- Wallet feature to withdraw coins via UPI or donate
+
+## Tech Stack
+- Frontend: Astro, React, Ant Design
+- Backend: Node.js, Express, MongoDB
+- Auth: JWT with bcrypt password hashing
+- Email: nodemailer for password reset
+
+## Key URLs
+- Login: /login
+- Dashboard: /
+- Topics: /topics
+- Wallet: /wallet
+- Admin CMS: /admin
+
+## API Base
+- REST API at /api (auth, sheet, dashboard, problems, quiz, wallet, admin)

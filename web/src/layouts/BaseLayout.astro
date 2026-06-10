@@ -1,0 +1,72 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+  jsonLd?: object;
+}
+
+const {
+  title = 'Shubham Sunny DSA Sheet — Practice with Rewards',
+  description = 'Shubham Sunny DSA Sheet is a structured DSA learning platform for students. Track progress chapter-by-chapter, solve coding problems, take quizzes, earn coins, and build interview readiness with company-tagged questions.',
+} = Astro.props;
+
+const siteUrl = Astro.site?.toString() || 'https://sheetstack.app';
+const canonical = new URL(Astro.url.pathname, siteUrl).href;
+
+const defaultJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'Shubham Sunny DSA Sheet',
+  description,
+  applicationCategory: 'EducationalApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'INR' },
+  featureList: [
+    'Structured DSA chapters and problems',
+    'Progress tracking with persistence',
+    'YouTube and LeetCode resource links',
+    'Built-in JavaScript code runner',
+    'Quiz-based learning with coin rewards',
+    'Activity calendar and consistency tracking',
+    'Company-wise problem filtering',
+  ],
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="Shubham Sunny DSA Sheet" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <meta name="author" content="Shubham Sunny" />
+    <meta name="keywords" content="DSA sheet, data structures, algorithms, coding practice, LeetCode, interview prep, student learning" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script type="application/ld+json" set:html={JSON.stringify(Astro.props.jsonLd || defaultJsonLd)} />
+    <style is:global>
+      @import '../styles/global.css';
+    </style>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
