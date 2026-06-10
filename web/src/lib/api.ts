@@ -130,6 +130,31 @@ export const api = {
   upsertTopic: (data: object) => adminRequest('/admin/topics', { method: 'POST', body: JSON.stringify(data) }),
   upsertProblem: (data: object) => adminRequest('/admin/problems', { method: 'POST', body: JSON.stringify(data) }),
   deleteProblem: (id: string) => adminRequest(`/admin/problems/${id}`, { method: 'DELETE' }),
+  verifyCollabEmail: (email: string) =>
+    request<{ valid: boolean; registered?: boolean; name?: string; self?: boolean }>(
+      `/collab/verify-email?email=${encodeURIComponent(email)}`
+    ),
+  startCollab: (data: { inviteeEmail: string; problemSlug: string }) =>
+    request<{
+      success: boolean;
+      meetLink: string;
+      problemSlug: string;
+      problemTitle: string;
+      inviteeEmail: string;
+      acceptUrl: string;
+    }>('/collab/start', { method: 'POST', body: JSON.stringify(data) }),
+  previewCollabInvite: (token: string) =>
+    request<CollabInvitePreview>(`/collab/${token}/preview`),
+  getCollabInvite: (token: string) =>
+    request<CollabInviteInfo>(`/collab/${token}`),
+  acceptCollab: (token: string) =>
+    request<{
+      success: boolean;
+      meetLink: string;
+      problemSlug: string;
+      problemTitle: string;
+      challengerName: string;
+    }>(`/collab/${token}/accept`, { method: 'POST' }),
 };
 
 export interface AdminAnalytics {
@@ -292,6 +317,26 @@ export interface FavoriteItem {
   timeSpentSeconds: number;
   lastOpenedAt: string | null;
   favoritedAt?: string;
+}
+
+export interface CollabInvitePreview {
+  challengerName: string;
+  problemTitle: string;
+  problemSlug: string;
+  inviteeEmail: string;
+  status: string;
+}
+
+export interface CollabInviteInfo {
+  challengerName: string;
+  inviteeName: string;
+  inviteeEmail: string;
+  problemTitle: string;
+  problemSlug: string;
+  meetLink: string;
+  status: string;
+  isInvitee: boolean;
+  isChallenger: boolean;
 }
 
 export interface WalletData {

@@ -1,4 +1,15 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+
+const APP_TITLE = 'Shubham Sunny DSA Sheet';
+
+function PageTitle() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    document.title = APP_TITLE;
+  }, [pathname]);
+  return null;
+}
 import { ConfigProvider, theme as antTheme, Spin } from 'antd';
 import { AuthProvider, useAuth } from './AuthContext';
 import LoginPage from './LoginPage';
@@ -7,6 +18,7 @@ import ProblemPage from './ProblemPage';
 import WalletPage from './WalletPage';
 import FavoritesPage from './FavoritesPage';
 import AdminExcelPage from './AdminExcelPage';
+import CollabAcceptPage from './CollabAcceptPage';
 
 const theme = {
   algorithm: antTheme.defaultAlgorithm,
@@ -38,14 +50,21 @@ const theme = {
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
+  const location = useLocation();
   if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: 100 }}><Spin /></div>;
-  return user ? <>{children}</> : <Navigate to="/login" replace />;
+  return user ? <>{children}</> : <Navigate to="/login" state={{ from: location }} replace />;
 }
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
+  const location = useLocation();
+  const state = location.state as { collab?: unknown; from?: { pathname?: string } } | null;
+  const collabFlow = Boolean(
+    state?.collab || state?.from?.pathname?.startsWith('/collab')
+  );
   if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: 100 }}><Spin /></div>;
-  return user ? <Navigate to="/" replace /> : <>{children}</>;
+  if (user && !collabFlow) return <Navigate to="/" replace />;
+  return <>{children}</>;
 }
 
 function AdminRoute({ children }: { children: React.ReactNode }) {
@@ -60,6 +79,7 @@ export default function App() {
     <ConfigProvider theme={theme}>
       <AuthProvider>
         <BrowserRouter>
+          <PageTitle />
           <div className="ss-app">
             <Routes>
               <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
@@ -67,6 +87,7 @@ export default function App() {
               <Route path="/topics" element={<PrivateRoute><Navigate to="/" replace /></PrivateRoute>} />
               <Route path="/topics/:slug" element={<PrivateRoute><Navigate to="/" replace /></PrivateRoute>} />
               <Route path="/problem/:slug" element={<PrivateRoute><ProblemPage /></PrivateRoute>} />
+              <Route path="/collab/accept/:token" element={<CollabAcceptPage />} />
               <Route path="/wallet" element={<PrivateRoute><WalletPage /></PrivateRoute>} />
               <Route path="/favorites" element={<PrivateRoute><FavoritesPage /></PrivateRoute>} />
               <Route path="/admin" element={<PrivateRoute><AdminRoute><AdminExcelPage /></AdminRoute></PrivateRoute>} />

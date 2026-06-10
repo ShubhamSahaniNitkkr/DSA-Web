@@ -80,7 +80,6 @@ export default function AdminExcelPage() {
           <p>Password required · not publicly listed</p>
           <Input.Password placeholder="Admin panel password" value={pw} onChange={(e) => setPw(e.target.value)} size="large" style={{ marginBottom: 12 }} />
           <Button type="primary" block size="large" loading={pwLoading} onClick={tryUnlock}>Unlock</Button>
-          <p style={{ fontSize: 11, color: 'var(--ink-muted)', marginTop: 12 }}>Set ADMIN_PANEL_PASSWORD in server .env</p>
         </div>
       </div>
     );

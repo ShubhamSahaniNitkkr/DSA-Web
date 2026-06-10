@@ -11,6 +11,7 @@ import problemRoutes from './routes/problemRoutes.js';
 import quizRoutes from './routes/quizRoutes.js';
 import walletRoutes from './routes/walletRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import collabRoutes from './routes/collabRoutes.js';
 import { startReminderScheduler } from './services/reminderScheduler.js';
 
 dotenv.config();
@@ -46,7 +47,7 @@ const limiter = rateLimit({
 app.use('/api', limiter);
 
 app.get('/api/health', (_req, res) => {
-  res.json({ success: true, message: 'SheetStack API is running' });
+  res.json({ success: true, message: 'Shubham Sunny DSA Sheet API is running' });
 });
 
 app.use('/api/auth', authRoutes);
@@ -56,6 +57,7 @@ app.use('/api/problems', problemRoutes);
 app.use('/api/quiz', quizRoutes);
 app.use('/api/wallet', walletRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/collab', collabRoutes);
 
 app.use((_req, res) => {
   res.status(404).json({ success: false, message: 'Route not found' });

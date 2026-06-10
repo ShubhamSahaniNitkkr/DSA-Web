@@ -1,0 +1,5 @@
+/login    /login/index.html    200
+/wallet    /wallet/index.html    200
+/favorites    /favorites/index.html    200
+/admin    /admin/index.html    200
+/*    /index.html    200

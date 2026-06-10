@@ -8,18 +8,15 @@ interface Props {
   onReset?: () => void;
 }
 
-const BTN_SIZE = 'large' as const;
-
 export default function TimerControls({ running, onPlay, onStop, onReset }: Props) {
   return (
     <div className="timer-controls">
       {!running ? (
         <Button
           type="primary"
-          size={BTN_SIZE}
+          className="dash-btn dash-btn-primary timer-btn timer-btn-play"
           icon={<PlayCircleFilled />}
           onClick={onPlay}
-          className="timer-btn timer-btn-play"
         >
           Play
         </Button>
@@ -27,16 +24,15 @@ export default function TimerControls({ running, onPlay, onStop, onReset }: Prop
         <Button
           danger
           type="primary"
-          size={BTN_SIZE}
           icon={<PauseCircleFilled />}
           onClick={onStop}
-          className="timer-btn timer-btn-stop"
+          className="dash-btn dash-btn-danger timer-btn timer-btn-stop"
         >
           Stop
         </Button>
       )}
       {onReset && (
-        <Button size={BTN_SIZE} onClick={onReset} className="timer-btn timer-btn-reset">
+        <Button onClick={onReset} className="dash-btn dash-btn-ghost timer-btn timer-btn-reset">
           Reset
         </Button>
       )}

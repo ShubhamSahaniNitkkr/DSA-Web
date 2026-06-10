@@ -72,7 +72,7 @@ export const sendPracticeReminder = async (email, name, stats = {}) => {
       <h2 style="color:#0d4429">Hey ${name || 'Coder'}, ready for today's problems?</h2>
       <p>Your progress: <strong>${completed}/${total}</strong> solved · <strong>${coins}🪙</strong> coins</p>
       <p>Open your sheet and knock out at least one problem today.</p>
-      <p><a href="${process.env.CLIENT_URL || 'http://localhost:4321'}" style="background:#0d4429;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:700">Open DSA Sheet</a></p>
+      <p><a href="${process.env.CLIENT_URL || 'http://localhost:4321'}" style="background:#0d4429;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:700">Open Shubham Sunny DSA Sheet</a></p>
       <p style="color:#64748b;font-size:12px">Disable alerts anytime from your dashboard.</p>
     </div>`;
 
@@ -82,5 +82,44 @@ export const sendPracticeReminder = async (email, name, stats = {}) => {
   }
 
   await transport.sendMail({ from: from(), to: email, subject, html });
+  return { sent: true };
+};
+
+export const sendCollabInvite = async ({
+  to,
+  inviteeName,
+  challengerName,
+  problemTitle,
+  meetLink,
+  acceptUrl,
+}) => {
+  const transport = createTransport();
+  const subject = `${APP_NAME} — ${challengerName} challenged you to a DSA race!`;
+  const html = `
+    <div style="font-family:sans-serif;max-width:520px">
+      <h2 style="color:#0d4429">Hey ${inviteeName || 'Coder'}!</h2>
+      <p><strong>${challengerName}</strong> wants to compete with you and collaborate on a DSA problem.</p>
+      <p>Problem: <strong>${problemTitle}</strong></p>
+      <p>Join the Google Meet session:</p>
+      <p><a href="${meetLink}" style="color:#0d4429;font-weight:700">${meetLink}</a></p>
+      <p style="margin-top:24px">
+        <a href="${acceptUrl}" style="background:#0d4429;color:#fff;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:700;display:inline-block">
+          Accept Challenge
+        </a>
+      </p>
+      <p style="color:#64748b;font-size:12px;margin-top:24px">
+        New here? Sign up with this email, accept the challenge, and you&apos;ll join the same Meet link and problem.
+      </p>
+      <p style="color:#64748b;font-size:13px">— ${APP_NAME}</p>
+    </div>`;
+
+  if (!transport) {
+    console.log(`[DEV] Collab invite → ${to}`);
+    console.log(`[DEV] Accept URL: ${acceptUrl}`);
+    console.log(`[DEV] Meet link: ${meetLink}`);
+    return { dev: true, acceptUrl, meetLink };
+  }
+
+  await transport.sendMail({ from: from(), to, subject, html });
   return { sent: true };
 };

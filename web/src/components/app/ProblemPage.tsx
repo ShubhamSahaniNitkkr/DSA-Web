@@ -135,7 +135,7 @@ function ResourceLink({ href, icon, title, sub, variant }: { href: string; icon:
 
 export default function ProblemPage() {
   const { slug } = useParams();
-  const { refreshUser } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [data, setData] = useState<ProblemDetail | null>(null);
   const [code, setCode] = useState('');
   const [note, setNote] = useState('');
@@ -418,7 +418,7 @@ export default function ProblemPage() {
 
             <div className="glass-card collab-side-card">
               <h4 className="cell-title">{NAV_EMOJI.collab} Collab</h4>
-              <CollabPanel sheet={sheet} defaultSlug={slug} compact />
+              <CollabPanel sheet={sheet} defaultSlug={slug} compact userEmail={user?.email} />
             </div>
 
             {videoId && (

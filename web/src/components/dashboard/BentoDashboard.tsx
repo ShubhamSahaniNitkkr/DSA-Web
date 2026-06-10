@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Switch, Button, Input, message, Modal, TimePicker, Checkbox } from 'antd';
-import { RightOutlined, PlusOutlined, SaveOutlined, PlayCircleOutlined } from '@ant-design/icons';
+import { RightOutlined, PlusOutlined, SaveOutlined, PlayCircleOutlined, CompressOutlined } from '@ant-design/icons';
+import DashboardTray from './DashboardTray';
 import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
 import { useTimeTracker } from '../../hooks/useTimeTracker';
@@ -86,7 +87,37 @@ export default function BentoDashboard({
   const [favCount, setFavCount] = useState(0);
   const [lastVisited, setLastVisited] = useState<LastVisitedProblem | null>(null);
   const [timeStats, setTimeStats] = useState({ totalActiveSeconds: 0, totalSolveSeconds: 0, lastSessionSeconds: 0 });
+  const [trayMinimized, setTrayMinimized] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    const saved = localStorage.getItem('ss_dash_tray');
+    if (saved === null) return true;
+    return saved === '1';
+  });
+  const [dockSticky, setDockSticky] = useState(false);
   const maxBar = Math.max(...consistency.map((c) => c.focusMinutes), 1);
+  const focusPeak = Math.max(...consistency.map((c) => c.focusMinutes), 0);
+
+  useEffect(() => {
+    localStorage.setItem('ss_dash_tray', trayMinimized ? '1' : '0');
+    document.body.classList.toggle('dash-dock-mode', trayMinimized);
+    if (!trayMinimized) setDockSticky(false);
+    return () => document.body.classList.remove('dash-dock-mode');
+  }, [trayMinimized]);
+
+  useEffect(() => {
+    if (!trayMinimized) return undefined;
+    const scrollEl = document.querySelector('.dz-scroll-page');
+    if (!scrollEl) return undefined;
+    const onScroll = () => setDockSticky(scrollEl.scrollTop > 40);
+    scrollEl.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => scrollEl.removeEventListener('scroll', onScroll);
+  }, [trayMinimized]);
+
+  useEffect(() => {
+    document.body.classList.toggle('dash-dock-sticky', trayMinimized && dockSticky);
+    return () => document.body.classList.remove('dash-dock-sticky');
+  }, [trayMinimized, dockSticky]);
 
   useEffect(() => { setEmailInput(userEmail ?? ''); }, [userEmail]);
   useEffect(() => { setRemindEmail(emailReminders ?? false); }, [emailReminders]);
@@ -151,7 +182,41 @@ export default function BentoDashboard({
 
   return (
     <>
+      {trayMinimized && (
+        <DashboardTray
+          coins={coins}
+          timerLabel={timer.formatted}
+          timerRunning={timer.running}
+          onPlay={timer.play}
+          onStop={timer.stop}
+          progressPct={progressPct}
+          completed={completed}
+          total={total}
+          badges={earnedBadges.length}
+          favorites={favCount}
+          activeLabel={fmtMin(displayActive)}
+          calendar={calendar}
+          focusPeak={focusPeak}
+          lastVisited={lastVisited}
+          remindersOn={remindEmail}
+          isSticky={dockSticky}
+          onExpand={() => setTrayMinimized(false)}
+        />
+      )}
+
+      {!trayMinimized && (
+      <div className="dash-control-shell dash-mission-open">
+        <div className="dash-panel-body">
       <div className="dash-masonry dash-masonry-ios">
+        <button
+          type="button"
+          className="dash-collapse-btn"
+          onClick={() => setTrayMinimized(true)}
+          title="Collapse to dock"
+        >
+          <CompressOutlined />
+          <span>Collapse</span>
+        </button>
         <button
           type="button"
           className={`glass-card dash-tint-card dash-card-coins dash-card-clickable ${cardThemeClass('coins')}`}
@@ -276,7 +341,7 @@ export default function BentoDashboard({
             placeholder="you@email.com"
             value={emailInput}
             onChange={(e) => setEmailInput(e.target.value)}
-            className={`email-input-field ${emailValid ? 'valid' : emailInput.trim() ? 'invalid' : ''}`}
+            className={`email-input-field dash-form-input ${emailValid ? 'valid' : emailInput.trim() ? 'invalid' : ''}`}
             status={emailInput.trim() && !emailValid ? 'error' : undefined}
           />
           {emailInput.trim() && !emailValid && (
@@ -292,7 +357,7 @@ export default function BentoDashboard({
                 format="HH:mm"
                 minuteStep={15}
                 needConfirm={false}
-                className="email-time-picker"
+                className="email-time-picker dash-form-input"
                 disabled={!emailValid}
               />
               <Button
@@ -300,7 +365,7 @@ export default function BentoDashboard({
                 icon={<PlusOutlined />}
                 onClick={addReminderTime}
                 disabled={!emailValid}
-                className="email-add-time-btn"
+                className="dash-btn dash-btn-secondary email-add-time-btn"
               >
                 Add
               </Button>
@@ -354,7 +419,7 @@ export default function BentoDashboard({
             block
             icon={<SaveOutlined />}
             loading={saving}
-            className="dash-email-save-btn"
+            className="dash-btn dash-btn-primary dash-email-save-btn"
             onClick={saveEmailPrefs}
             disabled={!emailValid}
           >
@@ -365,8 +430,8 @@ export default function BentoDashboard({
         <div className="dash-right-stack">
           <div className={`glass-card dash-tint-card dash-card-collab dash-card-static dash-card-action dash-card-half ${cardThemeClass('collab')}`} style={cardThemeStyle('collab')}>
             <div className="card-head"><span className="card-emoji">{NAV_EMOJI.collab}</span><h3>Collab</h3></div>
-            <p className="card-desc">Race friends on any problem</p>
-            <CollabPanel sheet={sheet} compact />
+            <p className="card-desc collab-card-desc">Race friends on any problem</p>
+            <CollabPanel sheet={sheet} compact userEmail={userEmail} />
           </div>
 
           <div className={`glass-card dash-tint-card dash-card-resume dash-card-static dash-card-action dash-card-half ${cardThemeClass('resume')}`} style={cardThemeStyle('resume')}>
@@ -385,7 +450,7 @@ export default function BentoDashboard({
                   type="primary"
                   block
                   icon={<PlayCircleOutlined />}
-                  className="resume-continue-btn"
+                  className="dash-btn dash-btn-primary resume-continue-btn"
                   onClick={() => navigate(`/problem/${lastVisited.slug}`)}
                 >
                   Continue
@@ -394,7 +459,7 @@ export default function BentoDashboard({
             ) : (
               <div className="resume-card-empty">
                 <p>Open any problem — your last session shows up here with time tracked.</p>
-                <Button block className="resume-continue-btn ghost" onClick={() => navigate('/#topics-sheet')}>
+                <Button block className="dash-btn dash-btn-ghost resume-continue-btn ghost" onClick={() => navigate('/#topics-sheet')}>
                   Browse problems
                 </Button>
               </div>
@@ -402,6 +467,9 @@ export default function BentoDashboard({
           </div>
         </div>
       </div>
+        </div>
+      </div>
+      )}
 
       <Modal title={`${NAV_EMOJI.badges} Badges & Share`} open={badgeModalOpen} onCancel={() => setBadgeModalOpen(false)} footer={null} width={720} destroyOnClose className="badge-share-modal">
         <BadgeShareCard embedded userName={userName} earnedBadges={earnedBadges} badgeCatalog={badgeCatalog} avatarData={avatarData} onAvatarSaved={onAvatarSaved} />

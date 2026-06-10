@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    { "source": "/login", "destination": "/login/index.html" },
+    { "source": "/wallet", "destination": "/wallet/index.html" },
+    { "source": "/favorites", "destination": "/favorites/index.html" },
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

@@ -43,14 +43,11 @@ export default function TopicSheetPanel({ sheet, progress, onToggle }: Props) {
     }))
     .filter((t) => t.problems.length > 0);
 
-  const totalProblems = sheet.reduce((n, t) => n + t.totalQuestions, 0);
-
   return (
     <div className="topic-bento-wrap">
       <div className="topic-bento-head">
         <div className="topic-bento-head-left">
-          <h2>DSA Sheet — All Topics</h2>
-          <p>{sheet.length} chapters · {totalProblems} problems · scroll on one page</p>
+          <h2 className="topic-sheet-title">Shubham Sunny DSA Sheet</h2>
         </div>
         <div className="topic-bento-filters">
           <Select

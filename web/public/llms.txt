@@ -1,6 +1,6 @@
-# SheetStack — DSA Practice Platform
+# Shubham Sunny DSA Sheet
 
-> SheetStack is a full-stack MERN educational web application for computer science students preparing for technical interviews.
+> Shubham Sunny DSA Sheet is a full-stack educational web application for computer science students preparing for technical interviews.
 
 ## What it does
 - Provides a structured DSA sheet organized into 8 chapters (Arrays, Two Pointers, Stack, Binary Search, Linked Lists, Trees, Graphs, Dynamic Programming)
