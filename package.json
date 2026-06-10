@@ -1,0 +1,19 @@
+{
+  "name": "sheetstack-dsa",
+  "version": "2.0.0",
+  "private": true,
+  "description": "SheetStack — Full-stack DSA Sheet with gamification",
+  "scripts": {
+    "install:all": "npm install --prefix server && npm install --prefix web",
+    "dev:server": "npm run dev --prefix server",
+    "dev:web": "npm run dev --prefix web",
+    "seed": "npm run seed --prefix server",
+    "seed:sheet": "node server/scripts/import-a2z-sheet.js",
+    "enrich:sheet": "node server/scripts/enrich-excel-sheet.js && node server/scripts/import-a2z-sheet.js",
+    "docs:pdf": "python3 scripts/generate-pdfs.py",
+    "start:server": "npm start --prefix server",
+    "build:web": "npm run build --prefix web",
+    "sample-excel": "node server/scripts/generate-sample-excel.js",
+    "seed:time": "node server/scripts/seed-time-dummy.js"
+  }
+}
