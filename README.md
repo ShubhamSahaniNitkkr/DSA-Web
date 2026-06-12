@@ -1,6 +1,12 @@
 # Shubham Sunny DSA Sheet
 
 A full-stack DSA learning web app that turns a structured problem sheet (450+ problems) into a **daily habit** — with coins, badges, progress tracking, Monaco IDE, interview timer, favorites, and an admin CMS.
+<img width="2239" height="1166" alt="image" src="https://github.com/user-attachments/assets/44f2bc74-c8e7-431f-90a0-4a21689a947f" />
+<img width="2238" height="1166" alt="image" src="https://github.com/user-attachments/assets/386a549a-d6c1-4e36-bd67-5f15e9849fd5" />
+<img width="2239" height="1166" alt="image" src="https://github.com/user-attachments/assets/4de965c3-6794-47da-a97f-459593e95eea" />
+
+
+
 
 **Stack:** Astro + React + Ant Design · Node.js + Express + MongoDB
 
