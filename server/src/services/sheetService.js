@@ -1,6 +1,7 @@
 import Topic from '../models/Topic.js';
 import Problem from '../models/Problem.js';
 import UserProgress from '../models/UserProgress.js';
+import UserProblemOpen from '../models/UserProblemOpen.js';
 import { COINS_PER_PROBLEM } from '../constants.js';
 import { getCache, setCache } from '../utils/cache.js';
 
@@ -40,18 +41,36 @@ const loadBaseSheet = async (filters = {}) => {
 export const buildSheetForUser = async (userId, filters = {}) => {
   const { topics, problemsByTopic, totalProblems } = await loadBaseSheet(filters);
 
-  const progress = await UserProgress.find({ userId, completed: true })
-    .select('problemId')
-    .lean();
+  const allProblems = Object.values(problemsByTopic).flat();
+  const allSlugs = allProblems.map((p) => p.slug);
+
+  const [progress, opens] = await Promise.all([
+    UserProgress.find({ userId, completed: true }).select('problemId').lean(),
+    UserProblemOpen.find({ userId, problemSlug: { $in: allSlugs } })
+      .select('problemSlug lastOpenedAt')
+      .lean(),
+  ]);
+
   const progressMap = Object.fromEntries(progress.map((p) => [p.problemId.toString(), true]));
+  const openMap = Object.fromEntries(opens.map((o) => [o.problemSlug, o.lastOpenedAt]));
   const completedCount = progress.length;
 
   const sheet = topics.map((t) => {
     const topicProblems = problemsByTopic[t._id.toString()] || [];
     const done = topicProblems.filter((p) => progressMap[p._id.toString()]).length;
+    const problemsWithOpens = topicProblems.map((p) => ({
+      ...p,
+      lastOpenedAt: openMap[p.slug] || null,
+    }));
+    const topicLastMs = problemsWithOpens.reduce((max, p) => {
+      if (!p.lastOpenedAt) return max;
+      const ms = new Date(p.lastOpenedAt).getTime();
+      return ms > max ? ms : max;
+    }, 0);
     return {
       ...t,
-      problems: topicProblems,
+      problems: problemsWithOpens,
+      lastOpenedAt: topicLastMs ? new Date(topicLastMs).toISOString() : null,
       totalQuestions: topicProblems.length,
       completedCount: done,
       coinsEarnable: topicProblems.length * COINS_PER_PROBLEM,

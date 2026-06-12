@@ -19,10 +19,3 @@ applications:
       cache:
         paths:
           - node_modules/**/*
-      customRedirects:
-        - source: '/api/<*>'
-          target: 'http://35.77.118.221:5001/api/<*>'
-          status: '200'
-        - source: '/<*>'
-          target: '/index.html'
-          status: '200'

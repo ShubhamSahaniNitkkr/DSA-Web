@@ -40,12 +40,6 @@ export default function ProblemLadder({ problems, progress, onToggle }: Props) {
               <div className="ladder-card-bar-fill" style={{ width: `${barPct}%` }} />
             </div>
 
-            {done && <span className="ladder-done-ribbon">Done</span>}
-
-            <div className="ladder-card-num">
-              {done ? <CheckOutlined /> : idx + 1}
-            </div>
-
             <div className="ladder-card-body">
               <span className={`ladder-diff dz-badge ${diffCls(p.difficulty)}`}>{p.difficulty}</span>
               <strong className="ladder-card-title">{p.title}</strong>

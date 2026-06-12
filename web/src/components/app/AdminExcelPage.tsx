@@ -4,9 +4,8 @@ import { UploadOutlined, DownloadOutlined, FileExcelOutlined, LockOutlined, BarC
 import { Navigate } from 'react-router-dom';
 import DonezoShell from '../layout/DonezoShell';
 import { api, getAdminGate, setAdminGate, clearAdminGate, type AdminAnalytics } from '../../lib/api';
+import { getApiBase } from '../../lib/apiBase';
 import { useAuth } from './AuthContext';
-
-const API = import.meta.env.PUBLIC_API_URL || 'http://localhost:5001/api';
 const authHeaders = () => ({
   Authorization: `Bearer ${localStorage.getItem('ss_token')}`,
   'X-Admin-Gate': getAdminGate() || '',
@@ -46,7 +45,7 @@ export default function AdminExcelPage() {
   };
 
   const download = async (path: string, name: string) => {
-    const res = await fetch(`${API}${path}`, { headers: authHeaders() });
+    const res = await fetch(`${getApiBase()}${path}`, { headers: authHeaders() });
     const blob = await res.blob();
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -60,7 +59,7 @@ export default function AdminExcelPage() {
     if (url.includes('csv')) files.forEach((f) => form.append('files', f));
     else form.append('file', files[0]);
     try {
-      const res = await fetch(`${API}${url}`, { method: 'POST', headers: authHeaders(), body: form });
+      const res = await fetch(`${getApiBase()}${url}`, { method: 'POST', headers: authHeaders(), body: form });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
       setStats(data.stats);

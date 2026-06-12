@@ -13,6 +13,29 @@ interface Props {
   onToggle: (problemId: string, checked: boolean, pos: { clientX: number; clientY: number }) => void;
 }
 
+function fmtLastOpened(iso: string) {
+  const d = new Date(iso);
+  return d.toLocaleString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
+}
+
+function topicLastOpened(topic: TopicCard, problems: TopicCard['problems']) {
+  if (topic.lastOpenedAt) return topic.lastOpenedAt;
+  let max = 0;
+  for (const p of problems) {
+    if (!p.lastOpenedAt) continue;
+    const ms = new Date(p.lastOpenedAt).getTime();
+    if (ms > max) max = ms;
+  }
+  return max ? new Date(max).toISOString() : null;
+}
+
 export default function TopicSheetPanel({ sheet, progress, onToggle }: Props) {
   const [openId, setOpenId] = useState<string | null>(null);
   const [difficulty, setDifficulty] = useState<string | undefined>();
@@ -83,17 +106,24 @@ export default function TopicSheetPanel({ sheet, progress, onToggle }: Props) {
           const pct = total ? Math.round((solved / total) * 100) : 0;
           const done = total > 0 && solved >= total;
           const cleanTitle = topic.title.replace(/\[.*?\]/g, '').trim();
+          const lastOpened = topicLastOpened(topic, topic.problems);
 
           return (
             <div
               key={topic._id}
               className={`glass-card topic-chapter-card topic-glass-card ${isOpen ? 'is-open' : ''} ${done ? 'is-complete' : ''}`}
               style={{
-                background: `linear-gradient(135deg, ${topic.tint.glass}, transparent 65%), rgba(255,255,255,0.45)`,
                 borderColor: done ? 'rgba(82, 183, 136, 0.45)' : topic.tint.border,
                 ['--topic-accent' as string]: topic.tint.accent,
+                ['--topic-fill' as string]: `${pct}%`,
               }}
             >
+              {!isOpen && (
+                <div className="topic-water-fill" aria-hidden>
+                  <div className="topic-water-surface" />
+                </div>
+              )}
+
               <button
                 type="button"
                 className="topic-chapter-head"
@@ -106,19 +136,22 @@ export default function TopicSheetPanel({ sheet, progress, onToggle }: Props) {
                     {topic.label.label}
                   </span>
                   <span className="topic-title">{cleanTitle}</span>
-                  <span className="topic-meta">{solved}/{total}</span>
+                  {!isOpen && (
+                    <span className="topic-stat-top">
+                      <strong>{pct}%</strong>
+                      <small>{solved}/{total}</small>
+                    </span>
+                  )}
                   {done && <span className="dz-badge done">Done</span>}
                 </div>
 
-                <div className="topic-chapter-summary">
-                  <div className="topic-chapter-progress-track">
-                    <div className="topic-chapter-progress-fill" style={{ width: `${pct}%` }} />
+                {!isOpen && lastOpened && (
+                  <div className="topic-chapter-meta">
+                    <span className="topic-last-open">
+                      Last opened {fmtLastOpened(lastOpened)}
+                    </span>
                   </div>
-                  <div className="topic-chapter-summary-text">
-                    <span>{solved} of {total} problems solved</span>
-                    <strong>{pct}%</strong>
-                  </div>
-                </div>
+                )}
               </button>
 
               {isOpen && (

@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.PUBLIC_API_URL || 'http://localhost:5001/api';
+import { getApiBase } from './apiBase';
 
 const getToken = () =>
   typeof window !== 'undefined' ? localStorage.getItem('ss_token') : null;
@@ -23,7 +23,7 @@ async function request<T>(endpoint: string, options: RequestInit = {}, admin = f
     if (gate) headers['X-Admin-Gate'] = gate;
   }
 
-  const res = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
+  const res = await fetch(`${getApiBase()}${endpoint}`, { ...options, headers });
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || 'Request failed');
   return data;
@@ -247,6 +247,7 @@ export interface TopicCard {
   coinsEarnable: number;
   coinsEarned: number;
   progressPercent: number;
+  lastOpenedAt?: string | null;
   problems: Problem[];
 }
 
@@ -257,6 +258,7 @@ export interface Problem {
   subtopic: string;
   difficulty: string;
   companies: string[];
+  lastOpenedAt?: string | null;
   resources: { youtube?: string; leetcode?: string; article?: string; codeforces?: string; affiliate?: string };
   sheetData?: SheetData;
 }
